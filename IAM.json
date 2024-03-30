@@ -1,0 +1,49 @@
+
+
+# Create IAM user
+aws iam create-user --user-name eks-ecr-user
+
+# Create IAM policy
+cat <<EOF > policy.json
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Effect": "Allow",
+            "Action": [
+                "eks:Describe*",
+                "eks:List*",
+                "eks:AccessKubernetesApi"
+            ],
+            "Resource": "*"
+        },
+        {
+            "Effect": "Allow",
+            "Action": [
+                "ecr:GetAuthorizationToken",
+                "ecr:BatchCheckLayerAvailability",
+                "ecr:GetDownloadUrlForLayer",
+                "ecr:GetRepositoryPolicy",
+                "ecr:DescribeRepositories",
+                "ecr:ListImages",
+                "ecr:DescribeImages",
+                "ecr:BatchGetImage",
+                "ecr:InitiateLayerUpload",
+                "ecr:UploadLayerPart",
+                "ecr:CompleteLayerUpload",
+                "ecr:PutImage"
+            ],
+            "Resource": "*"
+        }
+    ]
+}
+EOF
+
+# Create IAM policy
+aws iam create-policy --policy-name EKS_ECR_Access_Policy --policy-document file://policy.json
+
+# Attach policy to user
+aws iam attach-user-policy --policy-arn arn:aws:iam::aws:policy/EKS_ECR_Access_Policy --user-name eks-ecr-user
+
+# Clean up temporary files
+rm policy.json
