@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "laravel-10-boilerplate-task-chart.fullname" . }}
+  labels:
+    {{- include "laravel-10-boilerplate-task-chart.labels" . | nindent 4 }}
+spec:
+  type: {{ .Values.service.type }}
+  ports:
+    - port: {{ .Values.service.port }}
+      targetPort: http
+      protocol: TCP
+      name: http
+  selector:
+    {{- include "laravel-10-boilerplate-task-chart.selectorLabels" . | nindent 4 }}
